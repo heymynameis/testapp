@@ -1,0 +1,1815 @@
+<!doctype html>
+<html lang="ru">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Тесты</title>
+  <script src="/qrcode.js"></script>
+  <style>
+    :root {
+      --bg: #f3f5f9;
+      --surface: #fff;
+      --ink: #14213d;
+      --muted: #5b6678;
+      --line: #d5dbe6;
+      --accent: #2457d6;
+      --accent-ink: #fff;
+      --soft: #e8eefc;
+      --ok: #1f7a4d;
+      --err: #b3261e;
+      --sans: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      --serif: Georgia, "Times New Roman", serif;
+    }
+
+    @media (prefers-color-scheme:dark) {
+      :root {
+        --bg: #0f1523;
+        --surface: #171f33;
+        --ink: #e7ebf5;
+        --muted: #9aa5bb;
+        --line: #2c3652;
+        --accent: #6f95ff;
+        --accent-ink: #0b1226;
+        --soft: #1e2a4a;
+        --ok: #58c58d;
+        --err: #ff8a80
+      }
+    }
+
+    * {
+      box-sizing: border-box
+    }
+
+    html {
+      color-scheme: light dark
+    }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--ink);
+      font: 16px/1.5 var(--sans)
+    }
+
+    header.top {
+      background: var(--surface);
+      border-bottom: 1px solid var(--line);
+      margin-bottom: 20px;
+    }
+
+    .wrap {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 0 20px
+    }
+
+    header.top .wrap {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      min-height: 60px;
+      flex-wrap: wrap
+    }
+
+    .brand {
+      font: 600 20px var(--serif);
+      margin: 0
+    }
+
+    .modes {
+      display: flex;
+      gap: 4px
+    }
+
+    .modes button {
+      border: 0;
+      background: none;
+      padding: 8px 14px;
+      border-radius: 6px;
+      color: var(--muted);
+      font: 500 15px var(--sans);
+      cursor: pointer
+    }
+
+    .modes button[aria-pressed=true] {
+      background: var(--soft);
+      color: var(--accent)
+    }
+
+    main {
+      padding: 28px 20px 80px
+    }
+
+    h1,
+    h2,
+    h3 {
+      font-family: var(--serif);
+      line-height: 1.25;
+      margin: 0 0 12px
+    }
+
+    h1 {
+      font-size: 28px
+    }
+
+    h2 {
+      font-size: 21px
+    }
+
+    h3 {
+      font-size: 17px
+    }
+
+    .panel {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 22px;
+      margin-bottom: 16px
+    }
+
+    .row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px
+    }
+
+    .muted {
+      color: var(--muted)
+    }
+
+    .empty {
+      color: var(--muted);
+      padding: 24px 0;
+      text-align: center
+    }
+
+    label {
+      display: block;
+      font-weight: 500;
+      font-size: 14px
+    }
+
+    label>input,
+    label>select,
+    label>textarea {
+      margin-top: 6px
+    }
+
+    input,
+    select,
+    textarea {
+      width: 100%;
+      font: inherit;
+      color: inherit;
+      background: var(--bg);
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      padding: 9px 11px
+    }
+
+    textarea {
+      resize: vertical;
+      min-height: 84px
+    }
+
+    input:focus-visible,
+    select:focus-visible,
+    textarea:focus-visible,
+    button:focus-visible {
+      outline: 2px solid var(--accent);
+      outline-offset: 2px
+    }
+
+    button {
+      font: 500 15px var(--sans);
+      border-radius: 6px;
+      padding: 9px 16px;
+      border: 1px solid var(--line);
+      background: var(--surface);
+      color: var(--ink);
+      cursor: pointer
+    }
+
+    button:hover {
+      border-color: var(--accent)
+    }
+
+    button.primary {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: var(--accent-ink)
+    }
+
+    button.primary:hover {
+      filter: brightness(1.08)
+    }
+
+    button.ghost {
+      border-color: transparent;
+      background: none;
+      padding: 5px 9px
+    }
+
+    button.danger {
+      color: var(--err)
+    }
+
+    button:disabled {
+      opacity: .55;
+      cursor: not-allowed
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+      align-items: end
+    }
+
+    .grid .span {
+      grid-column: 1/-1
+    }
+
+    .inline {
+      display: flex;
+      gap: 10px;
+      margin-top: 12px
+    }
+
+    .inline input {
+      flex: 1
+    }
+
+    .stack>*+* {
+      margin-top: 14px
+    }
+
+    .list {
+      list-style: none;
+      margin: 0;
+      padding: 0
+    }
+
+    .list li {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      padding: 8px 0;
+      border-top: 1px solid var(--line)
+    }
+
+    .sw {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      cursor: pointer;
+      margin: 8px 0
+    }
+
+    .sw input {
+      appearance: none;
+      -webkit-appearance: none;
+      flex: none;
+      width: 42px;
+      min-width: 42px;
+      height: 24px;
+      padding: 0;
+      border-radius: 12px;
+      border: 1px solid var(--line);
+      background: var(--line);
+      position: relative;
+      cursor: pointer;
+      transition: background .15s
+    }
+
+    .sw input::after {
+      content: '';
+      position: absolute;
+      top: 2px;
+      left: 2px;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: #fff;
+      transition: transform .15s
+    }
+
+    .sw input:checked {
+      background: var(--accent);
+      border-color: var(--accent)
+    }
+
+    .sw input:checked::after {
+      transform: translateX(18px)
+    }
+
+    .tabs {
+      display: flex;
+      gap: 2px;
+      margin-bottom: 20px;
+      border-bottom: 1px solid var(--line);
+      overflow-x: auto
+    }
+
+    .tabs button {
+      border: 0;
+      border-bottom: 2px solid transparent;
+      border-radius: 0;
+      background: none;
+      color: var(--muted);
+      padding: 10px 14px;
+      white-space: nowrap
+    }
+
+    .tabs button[aria-selected=true] {
+      color: var(--accent);
+      border-bottom-color: var(--accent)
+    }
+
+    .sheet {
+      border-left: 5px solid var(--accent);
+      padding: 26px 26px 26px 28px
+    }
+
+    .meta {
+      display: flex;
+      justify-content: space-between;
+      color: var(--muted);
+      font-size: 14px;
+      margin-bottom: 10px
+    }
+
+    .bar {
+      height: 4px;
+      background: var(--line);
+      border-radius: 2px;
+      overflow: hidden;
+      margin-bottom: 22px
+    }
+
+    .bar i {
+      display: block;
+      height: 100%;
+      width: 100%;
+      background: var(--accent);
+      transition: width .5s linear
+    }
+
+    .bar i.low {
+      background: var(--err)
+    }
+
+    .qtext {
+      font-size: 23px;
+      font-weight: 500;
+      margin-bottom: 6px
+    }
+
+    .hint {
+      color: var(--muted);
+      font-size: 14px;
+      margin: 0 0 18px
+    }
+
+    .choice {
+      display: flex;
+      gap: 12px;
+      align-items: flex-start;
+      padding: 11px 14px;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      margin-bottom: 8px;
+      cursor: pointer;
+      font-weight: 400;
+      font-size: 16px
+    }
+
+    .choice:hover {
+      border-color: var(--accent)
+    }
+
+    .choice:has(input:checked) {
+      border-color: var(--accent);
+      background: var(--soft)
+    }
+
+    .choice input {
+      width: auto;
+      margin: 4px 0 0
+    }
+
+    .pair {
+      display: grid;
+      grid-template-columns: 1fr 90px;
+      gap: 12px;
+      align-items: center;
+      margin-bottom: 8px
+    }
+
+    .pair select {
+      margin: 0
+    }
+
+    .refs {
+      margin: 0 0 16px;
+      padding-left: 22px;
+      color: var(--muted)
+    }
+
+    .order {
+      list-style: none;
+      margin: 0 0 6px;
+      padding: 0
+    }
+
+    .order li {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 8px 8px 14px;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      margin-bottom: 8px
+    }
+
+    .order li span {
+      flex: 1
+    }
+
+    .order button {
+      padding: 4px 10px
+    }
+
+    .sheet form>button.primary {
+      margin-top: 14px
+    }
+
+    .result {
+      text-align: center;
+      padding: 40px 22px
+    }
+
+    .result .big {
+      font: 600 56px var(--serif);
+      margin: 6px 0
+    }
+
+    .table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 15px
+    }
+
+    .table th,
+    .table td {
+      text-align: left;
+      padding: 9px 8px;
+      border-top: 1px solid var(--line);
+      vertical-align: top
+    }
+
+    .table th {
+      font-weight: 600;
+      color: var(--muted);
+      font-size: 14px;
+      border-top: 0
+    }
+
+    .ans {
+      border-top: 1px solid var(--line);
+      padding: 12px 0
+    }
+
+    .ans b {
+      font-weight: 600
+    }
+
+    .pill {
+      display: inline-block;
+      font-size: 13px;
+      padding: 1px 9px;
+      border-radius: 99px;
+      background: var(--soft);
+      color: var(--accent)
+    }
+
+    #toast {
+      position: fixed;
+      left: 50%;
+      bottom: 24px;
+      transform: translateX(-50%);
+      background: var(--ink);
+      color: var(--bg);
+      padding: 10px 18px;
+      border-radius: 6px;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity .2s;
+      max-width: 90vw;
+      z-index: 9
+    }
+
+    #toast.show {
+      opacity: 1
+    }
+
+    #toast.err {
+      background: var(--err);
+      color: #fff
+    }
+
+    [hidden] {
+      display: none !important
+    }
+
+    .addr {
+      margin: 0 0 16px;
+      padding: 8px 14px;
+      background: var(--soft);
+      border-radius: 6px;
+      font-size: 15px;
+      text-align: center
+    }
+
+    .addr-box {
+      margin: 0 0 16px;
+      text-align: center;
+    }
+
+    .addr-box .addr {
+      margin: 10px 0 0
+    }
+
+    .addr-box .addr p {
+      margin: 0 0 10px
+    }
+
+    .qr {
+      display: inline-block;
+      background: #fff;
+      padding: 10px;
+      border-radius: 6px;
+      line-height: 0
+    }
+
+    .qr svg {
+      width: 200px;
+      height: 200px
+    }
+
+    .desc {
+      white-space: pre-wrap;
+      background: var(--soft);
+      border-radius: 6px;
+      padding: 10px 14px;
+      margin: 0
+    }
+
+    .qimg {
+      display: block;
+      max-width: 100%;
+      max-height: 360px;
+      margin: 0 0 16px;
+      border-radius: 6px;
+      border: 1px solid var(--line)
+    }
+
+    .opt {
+      display: grid;
+      grid-template-columns: auto minmax(0, 1fr) 40px;
+      gap: 10px;
+      align-items: center;
+      margin-bottom: 8px
+    }
+
+    .opt.alt {
+      grid-template-columns: minmax(0, 1fr) 40px
+    }
+
+    .mp {
+      display: grid;
+      grid-template-columns: auto minmax(0, 1fr) auto minmax(0, 1fr) 40px;
+      gap: 10px;
+      align-items: center;
+      margin-bottom: 8px
+    }
+
+    .mp.head {
+      color: var(--muted);
+      font-size: 14px;
+      margin-bottom: 4px
+    }
+
+    .idx {
+      font-weight: 600;
+      color: var(--muted);
+      min-width: 1.4em;
+      text-align: center
+    }
+
+    .opt input[type=radio],
+    .opt input[type=checkbox],
+    .mx input {
+      width: auto;
+      margin: 0;
+      accent-color: var(--accent)
+    }
+
+    .mx-wrap {
+      overflow-x: auto;
+      margin-top: 6px
+    }
+
+    .mx {
+      border-collapse: collapse
+    }
+
+    .mx th,
+    .mx td {
+      padding: 6px 12px;
+      text-align: center;
+      border-top: 1px solid var(--line)
+    }
+
+    .mx thead th {
+      border-top: 0;
+      color: var(--muted);
+      font-weight: 600
+    }
+
+    .mx tbody th {
+      font-weight: 600
+    }
+
+    .imgbox {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 10px
+    }
+
+    .imgbox .qimg {
+      flex-basis: 100%;
+      margin: 6px 0 0;
+      max-height: 220px;
+      width: auto
+    }
+
+    .hint.s {
+      margin: 0 0 10px
+    }
+
+    .drow {
+      display: grid;
+      grid-template-columns: auto minmax(0, 1fr) auto;
+      gap: 12px;
+      align-items: start;
+      padding: 12px 0;
+      border-top: 1px solid var(--line)
+    }
+
+    .drow:first-child {
+      border-top: 0
+    }
+
+    .drow>input[type=checkbox] {
+      width: auto;
+      margin: 10px 0 0;
+      accent-color: var(--accent)
+    }
+
+    .drow .cnt {
+      margin-top: 7px;
+      white-space: nowrap
+    }
+
+    .drow .sub {
+      font-size: 13px;
+      color: var(--muted);
+      margin: 4px 2px 0
+    }
+
+    .drow details {
+      font-size: 13px;
+      margin: 4px 2px 0;
+      color: var(--muted)
+    }
+
+    .drow details ul {
+      margin: 6px 0 0;
+      padding-left: 20px
+    }
+
+    .drow.off {
+      opacity: .55
+    }
+
+    .progress {
+      height: 10px;
+      background: var(--line);
+      border-radius: 5px;
+      overflow: hidden;
+      margin: 16px 0 6px
+    }
+
+    .progress i {
+      display: block;
+      height: 100%;
+      width: 0;
+      background: var(--accent);
+      transition: width .25s ease
+    }
+
+    .progress.done i {
+      background: var(--ok)
+    }
+
+    .okbox {
+      border-left: 4px solid var(--ok);
+      background: var(--soft);
+      border-radius: 6px;
+      padding: 10px 14px;
+      margin: 14px 0 0
+    }
+
+    .errbox {
+      border-left: 4px solid var(--err);
+      background: var(--soft);
+      border-radius: 6px;
+      padding: 10px 14px;
+      margin: 10px 0 0;
+      font-size: 14px
+    }
+
+    .errbox ul {
+      margin: 6px 0 0;
+      padding-left: 20px
+    }
+
+    @media (max-width:640px) {
+      .grid {
+        grid-template-columns: 1fr
+      }
+
+      .pair {
+        grid-template-columns: 1fr
+      }
+
+      .sheet {
+        padding: 20px 18px
+      }
+
+      .qtext {
+        font-size: 20px
+      }
+    }
+
+    @media (prefers-reduced-motion:reduce) {
+      * {
+        transition: none !important
+      }
+    }
+
+    /* ===== защита от копирования во время теста ===== */
+    body.no-copy,
+    body.no-copy * {
+      -webkit-user-select: none;
+      -moz-user-select: none;
+      user-select: none;
+      -webkit-touch-callout: none;
+      /* убирает «Сохранить изображение» по долгому тапу на iOS */
+    }
+
+    /* студент должен мочь выделять/править то, что сам ввёл */
+    body.no-copy input,
+    body.no-copy textarea {
+      -webkit-user-select: text;
+      -moz-user-select: text;
+      user-select: text;
+    }
+
+    body.no-copy .qimg {
+      -webkit-user-drag: none;
+      pointer-events: none;
+      /* блокирует перетаскивание и долгий тап по картинке */
+    }
+
+    @media print {
+      body.no-copy main {
+        display: none !important;
+      }
+
+      body.no-copy::after {
+        content: "Печать во время прохождения теста запрещена";
+        display: block;
+        padding: 40px;
+        font: 20px var(--serif);
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <header class="top">
+    <div class="wrap">
+      <p class="brand">Тесты</p>
+      <nav class="modes" aria-label="Режим">
+        <button data-mode="student" aria-pressed="true">Пройти тест</button>
+        <button data-mode="teacher" aria-pressed="false">Преподаватель</button>
+      </nav>
+    </div>
+  </header>
+  <main class="wrap" id="app"></main>
+  <div id="toast" role="status"></div>
+
+  <script>
+    'use strict';
+    /* ============ утилиты ============ */
+    const $ = (s, r = document) => r.querySelector(s);
+    const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+    const app = $('#app');
+    const fmtTime = s => `${Math.floor(s / 60)}:${String(Math.floor(s % 60)).padStart(2, '0')}`;
+    const fmtDate = ms => ms ? new Date(ms).toLocaleString('ru-RU') : '—';
+    const shuffle = a => { a = [...a]; for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1));[a[i], a[j]] = [a[j], a[i]]; } return a; };
+    const num = n => Math.round(n * 100) / 100;
+    const LETTERS = 'АБВГДЕЖЗИКЛМНОП';
+    const imgSrc = p => /^(\/|https?:)/.test(p) ? p : '/' + p;
+    let serverAddr = '', qrSvg = '', addrShown = false, qrGenerated = false;
+
+    function makeQr(text) {
+      if (typeof qrcode === 'undefined') return '';
+      const qr = qrcode(0, 'M');
+      qr.addData(text);
+      qr.make();
+      return qr.createSvgTag({ cellSize: 4, margin: 0, scalable: true });
+    }
+    const ADDR_HINT = '<p class="muted">Студент должен ввести этот адрес на ПК в аудитории или отсканировать код ниже для прохождения со смартфона. Смартфон должен быть в той же сети, что и компьютер с приложением тестов (можете раздать точку доступа Windows).</p>';
+    const addrHtml = () => serverAddr ? `<div class="addr-box">
+  <button type="button" id="addrBtn" aria-expanded="${addrShown}">${addrShown ? 'Скрыть' : '📲Показать'} адрес для подключения студентов</button>
+  <div id="addrInfo" class="addr" ${addrShown ? '' : 'hidden'}>
+    <p>Адрес сервера в локальной сети: <b>${esc(serverAddr)}</b></p>
+    ${ADDR_HINT}
+    ${qrSvg ? `<div class="qr">${qrSvg}</div>` : ''}
+  </div></div>` : '';
+
+    document.addEventListener('click', e => {
+      const b = e.target.closest('#addrBtn');
+      if (!b) return;
+      addrShown = !addrShown;
+      if (addrShown && !qrGenerated && serverAddr) {
+        qrSvg = makeQr(`http://${serverAddr}`);
+        qrGenerated = true;
+        const infoEl = $('#addrInfo');
+        if (infoEl) {
+          infoEl.innerHTML = `
+        <p>Адрес сервера в локальной сети: <b>${esc(serverAddr)}</b></p>
+        ${ADDR_HINT}
+        <div class="qr">${qrSvg}</div>
+      `;
+        }
+      }
+      $('#addrInfo').hidden = !addrShown;
+      b.textContent = (addrShown ? 'Скрыть' : '📲Показать') + ' адрес для студентов';
+      b.setAttribute('aria-expanded', addrShown);
+    });
+
+    let token = sessionStorage.getItem('token');
+    function setToken(t) { token = t; t ? sessionStorage.setItem('token', t) : sessionStorage.removeItem('token'); }
+
+    async function api(method, path, body) {
+      const headers = {};
+      if (body !== undefined) headers['Content-Type'] = 'application/json';
+      if (token) headers.Authorization = 'Bearer ' + token;
+      const r = await fetch(path, { method, headers, body: body !== undefined ? JSON.stringify(body) : undefined });
+      const d = await r.json().catch(() => ({}));
+      if (!r.ok) {
+        if (r.status === 401 && token) { setToken(null); if (mode === 'teacher') setTimeout(render, 0); }
+        const e = new Error(d.error || r.statusText); e.status = r.status; throw e;
+      }
+      return d;
+    }
+
+    let toastTimer;
+    function toast(msg, isErr) {
+      const t = $('#toast'); t.textContent = msg; t.className = 'show' + (isErr ? ' err' : '');
+      clearTimeout(toastTimer); toastTimer = setTimeout(() => t.className = '', 3200);
+    }
+    const act = fn => async (...a) => { try { await fn(...a); } catch (e) { toast(e.message, true); } };
+
+    /* ============ защита от копирования при прохождении теста ============ */
+    const isField = el => !!el && (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA');
+    const noCopyOn = () => document.body.classList.contains('no-copy');
+    function setNoCopy(on) { document.body.classList.toggle('no-copy', !!on); }
+
+    ['copy', 'cut', 'paste', 'contextmenu', 'dragstart', 'selectstart'].forEach(evt => {
+      document.addEventListener(evt, e => {
+        if (!noCopyOn()) return;
+        // своё поле ввода — не мешаем
+        if (isField(e.target) && (evt === 'selectstart' || evt === 'copy' || evt === 'cut')) return;
+        e.preventDefault();
+        if (evt === 'copy' || evt === 'cut') toast('Копирование запрещено во время теста', true);
+      }, true);
+    });
+
+    document.addEventListener('keydown', e => {
+      if (!noCopyOn()) return;
+      if (e.key === 'F12') { e.preventDefault(); return; }
+      if (!(e.ctrlKey || e.metaKey)) return;
+      const k = (e.key || '').toLowerCase();
+      if (e.shiftKey && ['i', 'j', 'c', 'k'].includes(k)) { e.preventDefault(); return; } // devtools
+      if (isField(e.target) && (k === 'c' || k === 'x' || k === 'a')) return;             // своё поле — можно
+      if (['c', 'x', 'a', 's', 'p', 'u'].includes(k)) {
+        e.preventDefault();
+        if (k === 'c' || k === 'x') toast('Копирование запрещено во время теста', true);
+      }
+    });
+    /* ============ режимы ============ */
+    let mode = 'student', tab = 'structure', timer = null;
+    const clearTimer = () => { clearInterval(timer); timer = null; };
+
+    let isLocal = false;   // по умолчанию считаем, что страница открыта не на сервере
+
+    document.querySelectorAll('[data-mode]').forEach(b => b.onclick = () => {
+      if (b.dataset.mode === 'teacher' && !isLocal) { toast('Вкладка «Преподаватель» доступна только на сервере', true); return; }
+      mode = b.dataset.mode;
+      document.querySelectorAll('[data-mode]').forEach(x => x.setAttribute('aria-pressed', x === b));
+      render();
+    });
+    async function render() {
+      setNoCopy(false);
+      clearTimer();
+      if (mode === 'teacher' && !isLocal) mode = 'student';
+      try { mode === 'student' ? await studentView() : await teacherView(); }
+      catch (e) { toast(e.message, true); }
+    }
+
+    /* ============ студент ============ */
+    const HINT = {
+      single: 'Выберите один вариант.',
+      multiple: 'Выберите все верные варианты. Неверно выбранные снижают балл.',
+      fill: 'Впишите одно слово.',
+      text: 'Ответьте текстом — обычно достаточно одного предложения.',
+      match: 'Для каждого элемента слева выберите номер подходящего элемента справа.',
+      order: 'Расставьте элементы в правильном порядке кнопками ▲ и ▼.',
+      justify: 'Выберите все верные варианты и обоснуйте ответ текстом. Балл: 50% за выбор, 50% за обоснование.',
+    };
+    let limitSec = 0;
+
+    async function studentView() {
+      const aid = sessionStorage.getItem('attempt');
+      if (aid) {
+        try { return showStep(await api('GET', `/attempts/${aid}/current`)); }
+        catch (e) {
+          sessionStorage.removeItem('attempt');
+          if (e.status === 410) return timeUp();
+          if (e.status !== 404) throw e;
+        }
+      }
+      const tests = await api('GET', '/tests');
+      app.innerHTML = `<section class="panel"><h1>Пройти тест</h1>
+    ${tests.length ? `<form id="sf" class="grid">
+      <label>ФИО<input name="name" required autocomplete="name"></label>
+      <label>Группа<input name="group" required></label>
+      <label class="span">Тест<select name="test">${tests.map(t =>
+        `<option value="${esc(t.id)}">${esc(t.name)}${t.timeLimitSec ? ` — ${Math.round(t.timeLimitSec / 60)} мин` : ''}</option>`).join('')}</select></label>
+      <p class="span desc" id="tdesc" hidden></p>
+      <div class="span"><button class="primary">Начать тест</button></div></form>`
+          : '<p class="empty">Пока нет ни одного теста</p>'}
+  </section>`;
+      const f = $('#sf');
+      const descOf = () => (tests.find(t => String(t.id) === f.test.value)?.description || '').trim();
+      if (f) {
+        const showDesc = () => { const el = $('#tdesc'), s = descOf(); el.textContent = s; el.hidden = !s; };
+        f.test.onchange = showDesc; showDesc();
+      }
+      if (f) f.onsubmit = act(async e => {
+        e.preventDefault();
+        const q = new URLSearchParams({ name: f.name.value.trim(), group: f.group.value.trim() });
+        const d = await api('POST', `/tests/${encodeURIComponent(f.test.value)}/start?${q}`);
+        sessionStorage.setItem('attempt', d.attemptId);
+        sessionStorage.setItem('attemptDesc', descOf());
+        limitSec = d.timeLeftSec || 0;
+        showStep(d);
+      });
+    }
+
+    function showStep(d) {
+      clearTimer();
+      if (d.finished) return showResult(d.result);
+      setNoCopy(true);
+      const q = d.question;
+      const letters = LETTERS;
+      let body = '';
+      switch (q.type) {
+        case 'single':
+          body = q.options.map(o => `<label class="choice"><input type="radio" name="a" value="${o.id}"><span>${esc(o.text)}</span></label>`).join(''); break;
+        case 'multiple':
+          body = q.options.map(o => `<label class="choice"><input type="checkbox" name="a" value="${o.id}"><span>${esc(o.text)}</span></label>`).join(''); break;
+        case 'fill':
+          body = '<input name="a" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Ответ">'; break;
+        case 'text':
+          body = '<textarea name="a" aria-label="Ответ"></textarea>'; break;
+        case 'match':
+          body = `<ol class="refs" style="list-style:decimal">${q.right.map(r => `<li>${esc(r.text)}</li>`).join('')}</ol>` +
+            q.left.map((l, i) => `<div class="pair"><span><b>${letters[i] || i + 1}.</b> ${esc(l.text)}</span>
+          <select data-l="${l.id}" aria-label="Соответствие для ${esc(l.text)}"><option value="">—</option>
+          ${q.right.map((r, j) => `<option value="${r.id}">${j + 1}</option>`).join('')}</select></div>`).join(''); break;
+        case 'order':
+          body = `<ul class="order" id="ord">${q.items.map(it => `<li data-id="${it.id}"><span>${esc(it.text)}</span>
+        <button type="button" data-mv="-1" aria-label="Выше">▲</button><button type="button" data-mv="1" aria-label="Ниже">▼</button></li>`).join('')}</ul>`; break;
+        case 'justify': {
+          const inputType = q.justifySingle ? 'radio' : 'checkbox';
+          body = q.options.map(o => `<label class="choice"><input type="${inputType}" name="a" value="${o.id}"><span>${esc(o.text)}</span></label>`).join('') +
+            `<label style="display:block;margin-top:14px">Обоснование<textarea name="j" required></textarea></label>`;
+          break;
+        }
+      }
+      app.innerHTML = `<section class="panel sheet">
+    <div class="meta"><span>Вопрос ${q.index} из ${q.total} · вес: ${q.weight ?? WEIGHT[q.type] ?? '—'}</span><span id="clock"></span></div>
+    <div class="bar"><i id="fill"></i></div>
+    <h2 class="qtext">${esc(q.text)}</h2>${q.img ? `<img class="qimg" src="${esc(imgSrc(q.img))}" alt="Изображение к вопросу">` : ''}
+        <p class="hint">${q.type === 'justify' && q.justifySingle
+          ? 'Выберите один верный вариант и обоснуйте ответ текстом. Балл: 50% за выбор, 50% за обоснование.'
+          : HINT[q.type]}</p>
+    <form id="qf">${body}<button class="primary">${q.index === q.total ? 'Завершить тест' : 'Ответить'}</button></form></section>`;
+
+      if (q.type === 'order') $('#ord').onclick = e => {
+        const b = e.target.closest('[data-mv]'); if (!b) return;
+        const li = b.closest('li');
+        b.dataset.mv === '-1' ? li.previousElementSibling && li.parentNode.insertBefore(li, li.previousElementSibling)
+          : li.nextElementSibling && li.parentNode.insertBefore(li.nextElementSibling, li);
+        b.focus();
+      };
+
+      if (d.timeLeftSec != null) {
+        const end = Date.now() + d.timeLeftSec * 1000;
+        limitSec = Math.max(limitSec, d.timeLeftSec);
+        const tick = () => {
+          const left = Math.max(0, (end - Date.now()) / 1000);
+          $('#clock').textContent = 'Осталось ' + fmtTime(left);
+          const f = $('#fill'); f.style.width = (left / limitSec * 100) + '%'; f.classList.toggle('low', left / limitSec < 0.2);
+          if (left <= 0) { clearTimer(); sessionStorage.removeItem('attempt'); timeUp(); }
+        };
+        tick(); timer = setInterval(tick, 500);
+      } else $('#clock').textContent = 'Без ограничения времени';
+
+      const f = $('#qf');
+      f.onsubmit = act(async e => {
+        e.preventDefault();
+        let answer;
+        if (q.type === 'single') { const c = f.querySelector('input:checked'); if (!c) return toast('Выберите вариант', true); answer = Number(c.value); }
+        else if (q.type === 'multiple') answer = [...f.querySelectorAll('input:checked')].map(c => Number(c.value));
+        else if (q.type === 'justify') {
+          const opts = [...f.querySelectorAll('input:checked')].map(c => Number(c.value));
+          const j = f.j.value.trim();
+          if (!opts.length) return toast(q.justifySingle ? 'Выберите вариант' : 'Выберите хотя бы один вариант', true);
+          if (!j) return toast('Введите обоснование', true);
+          answer = { options: opts, text: j };
+        }
+        else if (q.type === 'fill' || q.type === 'text') { answer = f.a.value.trim(); if (!answer) return toast('Введите ответ', true); }
+        else if (q.type === 'match') {
+          answer = {};
+          for (const s of f.querySelectorAll('select')) { if (s.value === '') return toast('Сопоставьте все элементы', true); answer[s.dataset.l] = Number(s.value); }
+        } else answer = [...f.querySelectorAll('#ord li')].map(li => Number(li.dataset.id));
+        f.querySelector('button.primary').disabled = true;
+        try { showStep(await api('POST', `/attempts/${sessionStorage.getItem('attempt')}/answer`, { answer })); }
+        catch (err) {
+          if (err.status === 410) { sessionStorage.removeItem('attempt'); return timeUp(); }
+          f.querySelector('button.primary').disabled = false; throw err;
+        }
+      });
+    }
+
+    function showResult(r) {
+      setNoCopy(true);
+      clearTimer(); sessionStorage.removeItem('attempt');
+      const desc = String(r.description ?? sessionStorage.getItem('attemptDesc') ?? '').trim();
+      sessionStorage.removeItem('attemptDesc');
+      const pct = r.maxScore > 0 ? Math.round(r.score / r.maxScore * 1000) / 10 : 0;
+      app.innerHTML = `<section class="panel result"><h1>Тест завершён</h1>
+    <div class="big">${pct}%</div>
+    <p class="muted">Баллы: ${num(r.score)} из ${num(r.maxScore)} · Затрачено времени: ${fmtTime(r.timeSpentSec)}</p>
+    ${desc ? `<p class="desc" style="text-align:left;margin:18px 0">${esc(desc)}</p>` : ''}
+    <button class="primary" id="again">К списку тестов</button></section>`;
+      $('#again').onclick = render;
+    }
+    function timeUp() {
+      setNoCopy(true);
+      clearTimer(); sessionStorage.removeItem('attemptDesc');
+      app.innerHTML = `<section class="panel result"><h1>Время вышло</h1>
+    <p class="muted">Ответы после окончания времени не принимаются. Баллы за отвеченные вопросы сохранены.</p>
+    <button class="primary" id="again">К списку тестов</button></section>`;
+      $('#again').onclick = render;
+    }
+
+    /* ============ преподаватель ============ */
+    const TABS = { structure: '📚Дисциплины и темы', questions: '❔Вопросы', tests: '📋Тесты', results: '📊Результаты', import: '📄Загрузить из Word', settings: '⚙️Настройки' };
+    const TYPES = { single: '🔘Выбор одного', multiple: '✅Выбор нескольких', fill: '✍️Дополнить фразу', text: '💬Ответ текстом', match: '🔗Сопоставление', order: '🔢Порядок', justify: '🗂️Выбор с обоснованием' };
+    const WEIGHT = { single: 1, multiple: 3, fill: 5, text: 10, match: 4, order: 4, justify: 8 };
+
+    async function teacherView() {
+      if (!token) return authView();
+      let S = {};
+      try { S = await api('GET', '/settings'); } catch { }
+      if (!token) return authView();   // сессия могла слететь (401)
+      const restricted = S.adminMode && !S.isAdmin;          // админ назначен, и это не я
+      const tabs = restricted ? { results: TABS.results } : TABS;
+      if (!tabs[tab]) tab = 'results';
+      app.innerHTML = `${addrHtml()}<div class="tabs" role="tablist">${Object.entries(tabs).map(([k, v]) =>
+        `<button role="tab" data-tab="${k}" aria-selected="${k === tab}">${v}</button>`).join('')}${restricted ? '<button id="out2">Выйти</button>' : ''}</div><div id="tab"></div>`;
+      if (restricted) $('#out2').onclick = act(async () => { await api('POST', '/auth/logout'); setToken(null); render(); });
+      app.querySelectorAll('[data-tab]').forEach(b => b.onclick = () => {
+        tab = b.dataset.tab;
+        editId = null; editText = ''; editImg = '';   // выходим из режима правки
+        render();
+      });
+      const el = $('#tab');
+      el.onclick = act(async e => {
+        const b = e.target.closest('[data-del]'); if (!b) return;
+        if (!confirm(b.dataset.warn || 'Удалить?')) return;
+        await api('DELETE', `/${b.dataset.del}/${b.dataset.id}`); toast('Удалено'); render();
+      });
+      await ({ structure: structureTab, questions: questionsTab, import: importTab, tests: testsTab, results: resultsTab, settings: settingsTab })[tab](el);
+    }
+
+    async function authView() {
+      let reg = true;
+      try { reg = !(await api('GET', '/settings/public')).registrationDisabled; } catch { }
+      app.innerHTML = `${addrHtml()}<div class="grid" style="align-items:start">
+    <section class="panel"><h2>Вход</h2><form id="lf" class="stack">
+      <label>Имя пользователя<input name="u" required autocomplete="username"></label>
+      <label>Пароль<input name="p" type="password" required autocomplete="current-password"></label>
+      <button class="primary">Войти</button></form></section>
+    ${reg ? `<section class="panel"><h2>Регистрация</h2><form id="rf" class="stack">
+      <label>Имя пользователя<input name="u" required autocomplete="username"></label>
+      <label>Пароль<input name="p" type="password" required autocomplete="new-password"></label>
+      <button>Создать аккаунт и войти</button></form></section>` : ''}</div>`;
+      const login = async (u, p) => { const d = await api('POST', '/auth/login', { username: u, password: p }); setToken(d.token); sessionStorage.setItem('uid', d.userId); render(); };
+      $('#lf').onsubmit = act(async e => { e.preventDefault(); await login(e.target.u.value, e.target.p.value); });
+      if (reg) $('#rf').onsubmit = act(async e => {
+        e.preventDefault();
+        const { u, p } = e.target;
+        await api('POST', '/auth/register', { username: u.value, password: p.value });
+        await login(u.value, p.value);
+      });
+    }
+    /* ----- дисциплины и темы ----- */
+    async function structureTab(el) {
+      const [ds, ts] = await Promise.all([api('GET', '/disciplines'), api('GET', '/topics')]);
+      el.innerHTML = `<form id="fd" class="inline" style="margin:0 0 18px"><input name="name" placeholder="Название новой дисциплины" required aria-label="Название дисциплины"><button class="primary">Добавить дисциплину</button></form>` +
+        (ds.length ? ds.map(d => `<section class="panel">
+      <div class="row"><h2 style="margin:0">${esc(d.name)}</h2>
+        <button class="ghost danger" data-del="disciplines" data-id="${d._id}" data-warn="Удалить дисциплину вместе с её темами и вопросами?">Удалить</button></div>
+      <ul class="list" style="margin-top:12px">${ts.filter(t => t.disciplineId === d._id).map(t =>
+          `<li><span>${esc(t.name)}</span><button class="ghost danger" data-del="topics" data-id="${t._id}" data-warn="Удалить тему вместе с её вопросами?">Удалить</button></li>`).join('') ||
+          '<li class="muted">Тем пока нет</li>'}</ul>
+      <form class="inline" data-addt="${d._id}"><input name="name" placeholder="Новая тема" required aria-label="Название темы"><button>Добавить тему</button></form></section>`).join('')
+          : '<p class="empty">Начните с дисциплины, затем добавьте в неё темы.</p>');
+      $('#fd').onsubmit = act(async e => { e.preventDefault(); await api('POST', '/disciplines', { name: e.target.name.value }); render(); });
+      el.querySelectorAll('[data-addt]').forEach(f => f.onsubmit = act(async e => {
+        e.preventDefault(); await api('POST', '/topics', { disciplineId: f.dataset.addt, name: f.name.value }); render();
+      }));
+    }
+
+    /* ----- вопросы ----- */
+    let selD = '', selT = '';
+    const MIN_ROWS = { single: 2, multiple: 2, fill: 1, text: 1, match: 2, order: 2, justify: 2 };
+    let ed = null, imgFile = null, imgUrl = null;
+
+    /* ----- состояние редактирования вопроса ----- */
+    let editId = null, editText = '', editImg = '';
+
+    /** Преобразует серверный вопрос (с расшифрованным correct) в структуру редактора `ed` */
+    function questionToEd(q) {
+      switch (q.type) {
+        case 'single': return { type: 'single', items: [...q.options], sel: q.correct };
+        case 'multiple': return {
+          type: 'multiple', items: [...q.options],
+          chk: q.options.map((_, i) => q.correct.includes(i))
+        };
+        case 'fill': case 'text':
+          return { type: q.type, items: [...q.correct] };
+        case 'match':
+          return {
+            type: 'match', left: [...q.left], right: [...q.right],
+            map: q.left.map((_, i) => q.correct[i])
+          };
+        case 'order': {
+          // сервер: items — перемешанный список, correct[p] = позиция исходного элемента p
+          const orig = q.correct.map(k => q.items[k]);   // восстанавливаем исходный порядок
+          return { type: 'order', items: orig, pos: orig.map((_, i) => i) };
+        }
+        case 'justify':
+          return {
+            type: 'justify',
+            items: [...q.options],
+            chk: q.options.map((_, i) => q.correct.indices.includes(i)),
+            just: [...q.correct.texts]
+          };
+      }
+    }
+
+    function newEd(type) {
+      switch (type) {
+        case 'single': return { type, items: ['', ''], sel: 0 };
+        case 'multiple': return { type, items: ['', ''], chk: [true, false] };
+        case 'fill': case 'text': return { type, items: [''] };
+        case 'match': return { type, left: ['', ''], right: ['', ''], map: [0, 1] };
+        case 'order': return { type, items: ['', ''], pos: [0, 1] };
+        case 'justify': return { type, items: ['', ''], chk: [true, false], just: [''] };
+      }
+    }
+    function resetEditor() {
+      ed = newEd('single');
+      if (imgUrl) URL.revokeObjectURL(imgUrl);
+      imgFile = imgUrl = null;
+    }
+
+    function matrix(rows, cols, sel, name) {
+      return `<div class="mx-wrap"><table class="mx"><thead><tr><th></th>${cols.map(c => `<th scope="col">${c}</th>`).join('')}</tr></thead><tbody>${rows.map((r, i) =>
+        `<tr><th scope="row">${r}</th>${cols.map((c, j) => `<td><input type="radio" name="${name}${i}" data-mx="${i}" value="${j}" ${sel[i] === j ? 'checked' : ''} aria-label="${r} — ${c}"></td>`).join('')}</tr>`).join('')}</tbody></table></div>`;
+    }
+
+    function fieldsHtml() {
+      const rm = (i, what) => i >= MIN_ROWS[ed.type]
+        ? `<button type="button" class="ghost danger" data-rm="${i}" title="Удалить" aria-label="Удалить ${what}">−</button>` : '<span></span>';
+      const add = text => `<div><button type="button" data-add>${text}</button></div>`;
+      switch (ed.type) {
+        case 'single': case 'multiple': {
+          const multi = ed.type === 'multiple';
+          return `<p class="hint s">${multi ? 'Отметьте все верные ответы.' : 'Отметьте верный ответ.'}</p>` +
+            ed.items.map((t, i) => `<div class="opt">
+          <input type="${multi ? 'checkbox' : 'radio'}" name="ok" data-ck="${i}" ${(multi ? ed.chk[i] : ed.sel === i) ? 'checked' : ''} aria-label="Ответ ${i + 1} верный">
+          <input data-t="${i}" value="${esc(t)}" placeholder="Ответ ${i + 1}" required aria-label="Ответ ${i + 1}">
+          ${rm(i, 'ответ ' + (i + 1))}</div>`).join('') + add('+ Добавить ответ');
+        }
+        case 'fill': case 'text':
+          return `<p class="hint s">Верный ответ и, при необходимости, альтернативные допустимые варианты.</p>` +
+            ed.items.map((t, i) => {
+              const ph = i ? 'Альтернативный вариант' : 'Верный ответ', req = i === 0 ? 'required' : '';
+              const field = ed.type === 'text'
+                ? `<textarea data-t="${i}" rows="2" style="min-height:60px" placeholder="${ph}" ${req} aria-label="${ph}">${esc(t)}</textarea>`
+                : `<input data-t="${i}" value="${esc(t)}" placeholder="${ph}" ${req} aria-label="${ph}">`;
+              return `<div class="opt alt">${field}${rm(i, 'вариант ' + (i + 1))}</div>`;
+            }).join('') + add('+ Добавить альтернативный вариант');
+        case 'match': {
+          const nums = ed.left.map((_, i) => i + 1), lets = ed.left.map((_, i) => LETTERS[i]);
+          return `<div class="mp head"><span></span><span>Левый столбец</span><span></span><span>Правый столбец</span><span></span></div>` +
+            ed.left.map((l, i) => `<div class="mp"><span class="idx">${lets[i]}</span>
+          <input data-l="${i}" value="${esc(l)}" required aria-label="Левый элемент ${lets[i]}">
+          <span class="idx">${nums[i]}</span>
+          <input data-r="${i}" value="${esc(ed.right[i])}" required aria-label="Правый элемент ${nums[i]}">
+          ${rm(i, 'пару ' + (i + 1))}</div>`).join('') +
+            (ed.left.length < LETTERS.length ? add('+ Добавить пару') : '') +
+            `<h3 style="margin:8px 0 4px">Верные соответствия</h3><p class="hint s">Для каждой буквы отметьте подходящий номер.</p>` +
+            matrix(lets, nums, ed.map, 'm');
+        }
+        case 'order': {
+          const nums = ed.items.map((_, i) => i + 1);
+          return `<p class="hint s">Введите элементы в любом порядке. Номер слева используется в таблице ниже.</p>` +
+            ed.items.map((t, i) => `<div class="opt"><span class="idx">${i + 1}</span>
+          <input data-t="${i}" value="${esc(t)}" placeholder="Элемент ${i + 1}" required aria-label="Элемент ${i + 1}">
+          ${rm(i, 'элемент ' + (i + 1))}</div>`).join('') + add('+ Добавить элемент') +
+            `<h3 style="margin:8px 0 4px">Верный порядок</h3><p class="hint s">Для каждого элемента отметьте, каким по счёту он должен стоять. Студенту элементы покажутся перемешанными.</p>` +
+            matrix(nums, nums, ed.pos, 'p');
+        }
+        case 'justify': {
+          const optRows = ed.items.map((t, i) => `<div class="opt">
+          <input type="checkbox" name="ok" data-ck="${i}" ${ed.chk[i] ? 'checked' : ''} aria-label="Ответ ${i + 1} верный">
+          <input data-t="${i}" value="${esc(t)}" placeholder="Ответ ${i + 1}" required aria-label="Ответ ${i + 1}">
+          ${rm(i, 'ответ ' + (i + 1))}</div>`).join('');
+          const justRows = ed.just.map((t, i) => {
+            const ph = i ? 'Альтернативное обоснование' : 'Верное обоснование';
+            const req = i === 0 ? 'required' : '';
+            const rmj = i >= 1
+              ? `<button type="button" class="ghost danger" data-rmj="${i}" title="Удалить" aria-label="Удалить обоснование">−</button>`
+              : '<span></span>';
+            return `<div class="opt alt"><textarea data-j="${i}" rows="2" style="min-height:60px" placeholder="${ph}" ${req} aria-label="${ph}">${esc(t)}</textarea>${rmj}</div>`;
+          }).join('');
+          return `<p class="hint s">Отметьте все верные варианты и введите верное обоснование.</p>` + optRows + add('+ Добавить ответ') +
+            `<h3 style="margin:8px 0 4px">Обоснование</h3><p class="hint s">Основной вариант и, при необходимости, альтернативные допустимые.</p>` +
+            justRows + `<div><button type="button" data-addj>+ Добавить альтернативу</button></div>`;
+        }
+      }
+    }
+
+    function bindEditor(box) {
+      const redraw = focusSel => {
+        box.innerHTML = fieldsHtml();
+        if (focusSel) { const l = box.querySelectorAll(focusSel); l[l.length - 1]?.focus(); }
+      };
+      box.addEventListener('input', e => {
+        const d = e.target.dataset;
+        if (d.t !== undefined) ed.items[+d.t] = e.target.value;
+        else if (d.l !== undefined) ed.left[+d.l] = e.target.value;
+        else if (d.r !== undefined) ed.right[+d.r] = e.target.value;
+        else if (d.j !== undefined) ed.just[+d.j] = e.target.value;
+      });
+      box.addEventListener('change', e => {
+        const t = e.target, d = t.dataset;
+        if (d.ck !== undefined) {
+          if (ed.type === 'multiple' || ed.type === 'justify') ed.chk[+d.ck] = t.checked;
+          else ed.sel = +d.ck;
+        }
+        else if (d.mx !== undefined) {
+          const i = +d.mx, c = +t.value;
+          if (ed.type === 'order') {            // позиции не повторяются: при выборе занятой — меняем местами
+            const j = ed.pos.indexOf(c);
+            if (j >= 0 && j !== i) ed.pos[j] = ed.pos[i];
+            ed.pos[i] = c;
+            box.querySelectorAll('[data-mx]').forEach(r => r.checked = ed.pos[+r.dataset.mx] === +r.value);
+          } else ed.map[i] = c;
+        }
+      });
+      box.addEventListener('click', e => {
+        const b = e.target.closest('button'); if (!b) return;
+        if (b.hasAttribute('data-add')) {
+          switch (ed.type) {
+            case 'single': case 'fill': case 'text': ed.items.push(''); break;
+            case 'multiple': ed.items.push(''); ed.chk.push(false); break;
+            case 'justify': ed.items.push(''); ed.chk.push(false); break;
+            case 'match': ed.left.push(''); ed.right.push(''); ed.map.push(ed.left.length - 1); break;
+            case 'order': ed.items.push(''); ed.pos.push(ed.items.length - 1); break;
+          }
+          redraw(ed.type === 'match' ? '[data-l]' : '[data-t]');
+        } else if (b.hasAttribute('data-addj')) {
+          ed.just.push('');
+          redraw('[data-j]');
+        } else if (b.dataset.rmj !== undefined) {
+          const k = +b.dataset.rmj; if (k < 1) return;
+          ed.just.splice(k, 1);
+          redraw();
+        } else if (b.dataset.rm !== undefined) {
+          const k = +b.dataset.rm; if (k < MIN_ROWS[ed.type]) return;
+          switch (ed.type) {
+            case 'single': ed.items.splice(k, 1); ed.sel = ed.sel === k ? 0 : ed.sel > k ? ed.sel - 1 : ed.sel; break;
+            case 'multiple': ed.items.splice(k, 1); ed.chk.splice(k, 1); break;
+            case 'justify': ed.items.splice(k, 1); ed.chk.splice(k, 1); break;
+            case 'fill': case 'text': ed.items.splice(k, 1); break;
+            case 'match':
+              ed.left.splice(k, 1); ed.right.splice(k, 1);
+              ed.map = ed.map.filter((_, l) => l !== k).map((r, l) => r === k ? l : r > k ? r - 1 : r); break;
+            case 'order': { const p = ed.pos[k]; ed.items.splice(k, 1); ed.pos.splice(k, 1); ed.pos = ed.pos.map(x => x > p ? x - 1 : x); break; }
+          }
+          redraw();
+        }
+      });
+    }
+
+    function bindImage() {
+      const inp = $('#imgf'), pv = $('#imgp'), nm = $('#imgn'), x = $('#imgx'), btn = $('#imgb');
+      const sync = () => {
+        const hasImg = !!(imgFile || editImg);
+        pv.hidden = x.hidden = !hasImg;
+        if (imgFile) pv.src = imgUrl;
+        else if (editImg) pv.src = imgSrc(editImg);
+        else pv.removeAttribute('src');
+        nm.textContent = imgFile ? imgFile.name : (editImg ? editImg.split('/').pop() : '');
+        btn.textContent = hasImg ? 'Заменить изображение' : 'Добавить изображение';
+      };
+      btn.onclick = () => inp.click();
+      inp.onchange = () => {
+        const fl = inp.files[0]; if (!fl) return;
+        if (!fl.type.startsWith('image/')) { inp.value = ''; return toast('Выберите файл-изображение', true); }
+        if (fl.size > 10 * 1024 * 1024) { inp.value = ''; return toast('Изображение больше 10 МБ', true); }
+        if (imgUrl) URL.revokeObjectURL(imgUrl);
+        imgFile = fl; imgUrl = URL.createObjectURL(fl); sync();
+      };
+      x.onclick = () => {
+        if (imgUrl) URL.revokeObjectURL(imgUrl);
+        imgFile = imgUrl = null;
+        editImg = '';                 // помечаем для удаления на сервере
+        inp.value = ''; sync();
+      };
+      sync();
+    }
+
+    async function uploadImage(file) {
+      const headers = { 'Content-Type': file.type };
+      if (token) headers.Authorization = 'Bearer ' + token;
+      const r = await fetch('/upload/question-img', { method: 'POST', headers, body: file });
+      const d = await r.json().catch(() => ({}));
+      if (!r.ok || !d.path) throw new Error(d.error || 'Не удалось загрузить изображение');
+      return d.path;
+    }
+
+    function buildQuestion(d) {
+      const full = (a, msg) => { const r = a.map(s => s.trim()); if (r.some(s => !s)) throw new Error(msg); return r; };
+      switch (d.type) {
+        case 'single': return { options: full(d.items, 'Заполните все варианты ответов'), correct: d.sel };
+        case 'multiple': {
+          const options = full(d.items, 'Заполните все варианты ответов');
+          const correct = d.chk.flatMap((c, i) => c ? [i] : []);
+          if (!correct.length) throw new Error('Отметьте хотя бы один верный ответ');
+          return { options, correct };
+        }
+        case 'fill': case 'text': {
+          const correct = d.items.map(s => s.trim()).filter(Boolean);
+          if (!correct.length) throw new Error('Введите верный ответ');
+          return { correct };
+        }
+        case 'match': {
+          const left = full(d.left, 'Заполните все элементы сопоставления'), right = full(d.right, 'Заполните все элементы сопоставления');
+          const correct = {}; d.map.forEach((r, l) => correct[l] = r);
+          return { left, right, correct };
+        }
+        case 'order': {
+          const raw = full(d.items, 'Заполните все элементы');
+          const items = []; d.pos.forEach((p, i) => items[p] = raw[i]);   // элементы в верном порядке
+          let idx = items.map((_, i) => i);
+          for (let n = 0; n < 20 && items.length > 1 && idx.every((v, i) => v === i); n++) idx = shuffle(idx);
+          return { items: idx.map(i => items[i]), correct: items.map((_, p) => idx.indexOf(p)) };
+        }
+        case 'justify': {
+          const options = full(d.items, 'Заполните все варианты ответов');
+          const correct = d.chk.flatMap((c, i) => c ? [i] : []);
+          if (!correct.length) throw new Error('Отметьте хотя бы один верный ответ');
+          const justification = d.just.map(s => s.trim()).filter(Boolean);
+          if (!justification.length) throw new Error('Введите верное обоснование');
+          return { options, correct, justification };
+        }
+      }
+    }
+
+    function showAnswer(q, a) {
+      if (a === null || a === undefined) return '—';
+      try {
+        switch (q.type) {
+          case 'single': return q.options[a];
+          case 'multiple': return a.map(i => q.options[i]).join('; ') || '—';
+          case 'match': return Object.entries(a).map(([l, r]) => `${q.left[l]} → ${q.right[r]}`).join('; ');
+          case 'order': return a.map(i => q.items[i]).join(' → ');
+          case 'justify': {
+            const opts = Array.isArray(a.options) ? a.options.map(i => q.options[i]).join('; ') : '—';
+            const txt = a.text || '—';
+            return `Выбор: ${opts} | Обоснование: ${txt}`;
+          }
+          default: return String(a);
+        }
+      } catch { return JSON.stringify(a); }
+    }
+
+    async function questionsTab(el) {
+      const [ds, ts] = await Promise.all([api('GET', '/disciplines'), api('GET', '/topics')]);
+      if (!ds.length) { el.innerHTML = '<p class="empty">Сначала создайте дисциплину и тему на вкладке «Дисциплины и темы».</p>'; return; }
+      if (!ds.some(d => d._id === selD)) selD = ds[0]._id;
+      const myTs = ts.filter(t => t.disciplineId === selD);
+      if (!myTs.some(t => t._id === selT)) selT = myTs[0]?._id || '';
+      const qs = selT ? await api('GET', `/questions?topicId=${encodeURIComponent(selT)}`) : [];
+      if (!editId) resetEditor();          // сбрасываем редактор, только если не в режиме правки
+
+      const isEdit = !!editId;
+      el.innerHTML = `<section class="panel"><div class="grid">
+      <label>Дисциплина<select id="sd">${ds.map(d => `<option value="${d._id}" ${d._id === selD ? 'selected' : ''}>${esc(d.name)}</option>`).join('')}</select></label>
+      <label>Тема<select id="st">${myTs.map(t => `<option value="${t._id}" ${t._id === selT ? 'selected' : ''}>${esc(t.name)}</option>`).join('') || '<option value="">Нет тем</option>'}</select></label>
+    </div></section>
+    ${selT ? `<section class="panel"><h2>Вопросы темы (${qs.length})</h2>
+      ${qs.map(q => `<div class="ans"><div class="row"><span><span class="pill">${TYPES[q.type]}</span> ${esc(q.text)}</span>
+        <span><button class="ghost" data-edit="${q._id}">Редактировать</button>
+        <button class="ghost danger" data-del="questions" data-id="${q._id}">Удалить</button></span></div></div>`).join('') || '<p class="muted">В этой теме пока нет вопросов.</p>'}</section>
+    <section class="panel"><h2>${isEdit ? 'Редактирование вопроса' : 'Новый вопрос'}</h2><form id="qf" class="stack">
+      <label>Тип<select name="type" ${isEdit ? 'disabled' : ''}>${Object.entries(TYPES).map(([k, v]) => `<option value="${k}" ${ed.type === k ? 'selected' : ''}>${v} (вес ${WEIGHT[k]})</option>`).join('')}</select></label>
+      <label>Текст вопроса<textarea name="text" required>${esc(isEdit ? editText : '')}</textarea></label>
+      <div class="imgbox"><input type="file" id="imgf" accept="image/*" hidden><button type="button" id="imgb">Добавить изображение</button>
+        <span id="imgn" class="muted"></span><button type="button" class="ghost danger" id="imgx" hidden>Убрать</button>
+        <img id="imgp" class="qimg" alt="Предпросмотр изображения" hidden></div>
+      <div id="fields" class="stack">${fieldsHtml()}</div>
+      <div class="inline"><button class="primary">${isEdit ? 'Сохранить изменения' : 'Добавить вопрос'}</button>
+        ${isEdit ? '<button type="button" id="qcancel">Отмена</button>' : ''}</div>
+    </form></section>`
+          : '<p class="empty">В выбранной дисциплине нет тем — добавьте тему.</p>'}`;
+
+      $('#sd').onchange = e => { selD = e.target.value; selT = ''; editId = null; editText = ''; editImg = ''; render(); };
+      $('#st').onchange = e => { selT = e.target.value; editId = null; editText = ''; editImg = ''; render(); };
+
+      // обработчик «Редактировать»
+      el.querySelectorAll('[data-edit]').forEach(b => b.onclick = act(async () => {
+        const q = await api('GET', `/questions/${b.dataset.edit}`);
+        ed = questionToEd(q);
+        editText = q.text;
+        editImg = q.img || '';
+        editId = q._id;
+        render();
+        $('#qf')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }));
+
+      const f = $('#qf');
+      if (f) {
+        bindEditor($('#fields')); bindImage();
+        f.type.onchange = () => {
+          if (isEdit) return;                     // тип при правке менять нельзя
+          ed = newEd(f.type.value);
+          $('#fields').innerHTML = fieldsHtml();
+        };
+        if (isEdit) {
+          const c = $('#qcancel');
+          if (c) c.onclick = () => { editId = null; editText = ''; editImg = ''; render(); };
+        }
+        f.onsubmit = act(async e => {
+          e.preventDefault();
+          const body = { type: ed.type, text: f.text.value, disciplineId: selD, topicId: selT, ...buildQuestion(ed) };
+          if (imgFile) body.img = await uploadImage(imgFile);
+          else if (isEdit) body.img = editImg || '';   // '' → сервер снимет картинку
+          if (isEdit) { await api('PUT', `/questions/${editId}`, body); toast('Вопрос обновлён'); }
+          else { await api('POST', '/questions', body); toast('Вопрос добавлен'); }
+          editId = null; editText = ''; editImg = '';
+          render();
+        });
+      }
+    }
+    /* ----- тесты ----- */
+    async function testsTab(el) {
+      const [tests, ds, ts, qs] = await Promise.all([api('GET', '/tests'), api('GET', '/disciplines'), api('GET', '/topics'), api('GET', '/questions')]);
+      const byTopic = {}; qs.forEach(q => (byTopic[q.topicId] ||= []).push(q));
+      const snip = x => { x = String(x || '').replace(/\s+/g, ' ').trim(); return x.length > 80 ? x.slice(0, 80) + '…' : x; };
+      const topicRows = ds.map(d => {
+        const mine = ts.filter(t => t.disciplineId === d._id && byTopic[t._id]);
+        return mine.length ? `<fieldset style="border:1px solid var(--line);border-radius:6px;margin:0 0 10px"><legend>${esc(d.name)}</legend>${mine.map(t => {
+          const list = byTopic[t._id], n = list.length; return `
+      <div style="margin:0 0 10px">
+      <div class="pair" style="grid-template-columns:1fr 150px"><label class="choice" style="margin:0"><input type="checkbox" data-topic="${t._id}"><span>${esc(t.name)} <span class="muted">(всего ${n})</span></span></label>
+      <label style="font-weight:400">Выдать <input type="number" min="1" max="${n}" value="${n}" data-count="${t._id}" style="width:80px;display:inline-block;margin:0"></label></div>
+      <details style="margin:6px 0 0 26px"><summary class="muted" data-sum="${t._id}" style="cursor:pointer">Выбрать вопросы (выбрано ${n} из ${n})</summary>
+        <div style="margin:6px 0"><button type="button" class="ghost" data-qall="${t._id}">Выбрать все</button> <button type="button" class="ghost" data-qnone="${t._id}">Снять все</button></div>
+        ${list.map(q => `<label class="choice" style="margin:4px 0"><input type="checkbox" data-q="${q._id}" data-qt="${t._id}" checked><span><span class="pill">${TYPES[q.type]}</span> ${esc(snip(q.text))}</span></label>`).join('')}
+      </details></div>`;
+        }).join('')}</fieldset>` : '';
+      }).join('');
+
+      el.innerHTML = `<section class="panel"><h2>Созданные тесты</h2><ul class="list">${tests.map(t =>
+        `<li><span>${esc(t.name)} ${t.timeLimitSec ? `<span class="muted">· ${Math.round(t.timeLimitSec / 60)} мин</span>` : ''}</span>
+     <button class="ghost danger" data-del="tests" data-id="${t.id}">Удалить</button></li>`).join('') || '<li class="muted">Тестов пока нет</li>'}</ul></section>
+  <section class="panel"><h2>Новый тест</h2>${topicRows ? `<form id="tf" class="stack">
+    <div class="grid"><label>Название<input name="name" required></label>
+    <label>Время, минут (пусто — без ограничения)<input name="min" type="number" min="1"></label></div>
+    <label>Пояснение к тесту (необязательно)<textarea name="expl" placeholder="Текст показывается до начала и вместе с результатом в конце. Например:\n85% и выше - отлично\n75% и выше - хорошо\n60% и выше - удовлетворительно"></textarea></label>
+    <label class="choice" style="margin:0"><input type="checkbox" name="sq"><span>Перемешивать порядок вопросов</span></label>
+    <label class="choice" style="margin:0"><input type="checkbox" name="sa"><span>Перемешивать варианты ответов</span></label>
+    <div><h3>Темы и число вопросов из каждой</h3><p class="muted" style="margin-top:0">Раскройте «Выбрать вопросы», чтобы отметить конкретные вопросы темы; из отмеченных будет выдано указанное число случайных.</p>${topicRows}</div>
+    <button class="primary">Создать тест</button></form>` : '<p class="empty">Нужна хотя бы одна тема, в которой есть вопросы.</p>'}</section>`;
+      const f = $('#tf');
+      if (f) {
+        const boxesOf = tid => [...f.querySelectorAll(`[data-qt="${tid}"]`)];
+        const sync = tid => {
+          const boxes = boxesOf(tid), n = boxes.filter(b => b.checked).length;
+          const c = f.querySelector(`[data-count="${tid}"]`);
+          const wasAll = Number(c.value) >= Number(c.max);
+          c.max = Math.max(n, 1); c.disabled = !n;
+          if (n && (wasAll || Number(c.value) > n)) c.value = n;
+          f.querySelector(`[data-sum="${tid}"]`).textContent = `Выбрать вопросы (выбрано ${n} из ${boxes.length})`;
+          if (n) f.querySelector(`[data-topic="${tid}"]`).checked = true;
+        };
+        f.addEventListener('change', e => { if (e.target.dataset.qt) sync(e.target.dataset.qt); });
+        f.addEventListener('click', e => {
+          const b = e.target.closest('[data-qall],[data-qnone]'); if (!b) return;
+          const tid = b.dataset.qall || b.dataset.qnone;
+          boxesOf(tid).forEach(x => x.checked = !!b.dataset.qall); sync(tid);
+        });
+      }
+      if (f) f.onsubmit = act(async e => {
+        e.preventDefault();
+        const topics = [];
+        for (const c of f.querySelectorAll('[data-topic]:checked')) {
+          const tid = c.dataset.topic, boxes = [...f.querySelectorAll(`[data-qt="${tid}"]`)], ids = boxes.filter(b => b.checked).map(b => b.dataset.q);
+          if (!ids.length) return toast('В отмеченной теме не выбрано ни одного вопроса', true);
+          const count = Math.min(Number(f.querySelector(`[data-count="${tid}"]`).value), ids.length);
+          topics.push(ids.length === boxes.length ? { topicId: tid, count } : { topicId: tid, count, questionIds: ids });
+        }
+        if (!topics.length) return toast('Отметьте хотя бы одну тему', true);
+        await api('POST', '/tests', { name: f.name.value, description: f.expl.value.trim(), timeLimitSec: f.min.value ? Number(f.min.value) * 60 : null, shuffleQuestions: f.sq.checked, shuffleAnswers: f.sa.checked, topics });
+        toast('Тест создан'); render();
+      });
+    }
+
+    /* ----- загрузка ФОС из Word ----- */
+    const imp = { file: null, clean: true, res: null, busy: '', done: 0, total: 0, report: null };
+    const plural = (n, f) => f[n % 100 > 10 && n % 100 < 15 ? 2 : [2, 0, 1, 1, 1, 2][Math.min(n % 10, 5)]];
+    const nQ = n => `${n} ${plural(n, ['вопрос', 'вопроса', 'вопросов'])}`;
+    const impActive = () => mode === 'teacher' && tab === 'import' && $('#tab');
+
+    function impDiscHtml(d, i) {
+      const types = Object.entries(d.types || {}).map(([t, n]) => `${TYPES[t] || t}: ${n}`).join(' · ');
+      const notes = [...(d.skipped || []).map(s => `№ ${esc(s.num)} — не загружен: ${esc(s.reason)}`), ...(d.warnings || []).map(esc)];
+      const meta = [d.code, d.source].filter(Boolean).map(esc).join(' · ');
+      return `<div class="drow ${d.uploaded || !d.questions.length ? 'off' : ''}">
+    <input type="checkbox" data-sel="${i}" ${d.sel ? 'checked' : ''} ${d.uploaded || !d.questions.length || imp.busy ? 'disabled' : ''} aria-label="Загрузить дисциплину «${esc(d.name)}»">
+    <div><input data-name="${i}" value="${esc(d.name)}" ${d.uploaded || imp.busy ? 'disabled' : ''} aria-label="Название дисциплины">
+      <div class="sub">${meta}${types ? ` · ${esc(types)}` : ''}${d.uploaded ? ' · <b style="color:var(--ok)">загружено ✓</b>' : ''}</div>
+      ${notes.length ? `<details><summary>Замечания: ${notes.length}</summary><ul>${notes.map(n => `<li>${n}</li>`).join('')}</ul></details>` : ''}</div>
+    <span class="pill cnt">${nQ(d.questions.length)}</span></div>`;
+    }
+
+    function impProgressHtml() {
+      const pct = imp.total ? Math.round(imp.done / imp.total * 100) : 0;
+      const r = imp.report;
+      if (!imp.busy && !r) return '';
+      return `<div class="progress ${r && !imp.busy ? 'done' : ''}" id="impbar" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${pct}"><i style="width:${pct}%"></i></div>
+    <div class="muted" id="imptxt">${imp.busy === 'upload' ? `Загружено ${imp.done} из ${imp.total} (${pct}%)` : ''}</div>
+    ${r && !imp.busy ? `<div class="okbox"><b>${r.fatal ? 'Загрузка прервана' : 'Загрузка завершена'}.</b>
+      Добавлено вопросов: ${r.added} из ${imp.total}, дисциплин: ${r.discs}.${r.fatal ? ` Ошибка: ${esc(r.fatal)}` : ''}</div>
+      ${r.failed.length ? `<div class="errbox">Не принято сервером (${r.failed.length}):<ul>${r.failed.map(f => `<li>${esc(f.disc)}, вопрос ${f.n}: ${esc(f.error)}</li>`).join('')}</ul></div>` : ''}` : ''}`;
+    }
+
+    function impResultHtml() {
+      const r = imp.res;
+      if (!r) return '';
+      if (!r.disciplines.length) return `<section class="panel"><p class="empty">В документе не найдено таблиц с тестами. Ожидаются таблицы со столбцами «Содержание задания» и «Ключ к ответу».</p></section>`;
+      return `<section class="panel"><h2>Найдено дисциплин: ${r.disciplines.length}</h2>
+    <p class="muted" style="margin-top:0">Отметьте нужные дисциплины. Названия можно изменить перед загрузкой: если у нескольких дисциплин одно название, они объединятся, а дисциплина с таким именем, которая уже есть в базе, будет дополнена.</p>
+    <div>${r.disciplines.map(impDiscHtml).join('')}</div>
+    <p class="muted" id="impsel" style="margin:12px 0 0"></p>
+    <div style="margin-top:12px"><button class="primary" id="impu" ${imp.busy ? 'disabled' : ''}>${imp.busy === 'upload' ? 'Загрузка…' : 'Загрузить в базу'}</button></div>
+    <div id="impprog">${impProgressHtml()}</div></section>`;
+    }
+
+    function impUpdSel() {
+      const el = $('#impsel'); if (!el || !imp.res) return;
+      const ds = imp.res.disciplines.filter(d => d.sel && !d.uploaded && d.questions.length);
+      el.textContent = ds.length ? `Выбрано: ${ds.length} ${plural(ds.length, ['дисциплина', 'дисциплины', 'дисциплин'])}, ${nQ(ds.reduce((a, d) => a + d.questions.length, 0))}` : 'Ничего не выбрано';
+      const b = $('#impu'); if (b && !imp.busy) b.disabled = !ds.length;
+    }
+
+    function impPaintProgress() {
+      if (!impActive()) return;
+      const pct = imp.total ? Math.round(imp.done / imp.total * 100) : 0;
+      const bar = $('#impbar'), txt = $('#imptxt');
+      if (bar) { bar.firstElementChild.style.width = pct + '%'; bar.setAttribute('aria-valuenow', pct); }
+      if (txt) txt.textContent = `Загружено ${imp.done} из ${imp.total} (${pct}%)`;
+    }
+
+    function importTab(el) {
+      const paint = () => { if (impActive()) importTab($('#tab')); };
+      const sel = imp.file ? esc(imp.file.name) : 'Файл не выбран';
+      el.innerHTML = `<section class="panel"><h2>Загрузить тест/тесты из Word</h2>
+    <p style="margin-top:0">Программа распознает 8 видов вопросов в документе (закрытый одиночный, закрытый множественный, дополнить словом, ответ предложением, выбрать 1 вариант и обосновать, выбрать несколько вариантов и обосновать, указать порядок, указать соответствие). Шаблон документа с примерами всех видов вопросов:</p>
+    <div style="margin:0 0 16px"><button type="button" id="impex">Скачать шаблон (example.docx)</button></div>
+    <p class="muted" style="margin-top:0">Выберите документ .docx и нажмите «Анализ»: будут найдены таблицы с тестами (столбцы «Содержание задания» и «Ключ к ответу»), а перед каждой — название дисциплины.</p>
+    <div class="imgbox"><input type="file" id="impf" accept=".docx,application/vnd.openxmlformats-officedocument.wordprocessingml.document" hidden>
+      <button type="button" id="impb" ${imp.busy ? 'disabled' : ''}>Выбрать файл</button><span class="muted">${sel}</span></div>
+    <label class="choice" style="margin:12px 0 0"><input type="checkbox" id="impc" ${imp.clean ? 'checked' : ''} ${imp.busy ? 'disabled' : ''}><span>Убирать из текста вопросов шаблонную фразу вида «Прочитайте текст вопроса и выберите…»</span></label>
+    <div style="margin-top:14px"><button class="primary" id="impa" ${imp.file && !imp.busy ? '' : 'disabled'}>${imp.busy === 'analyze' ? 'Анализ…' : 'Анализ'}</button></div></section>
+    ${impResultHtml()}`;
+
+      $('#impb').onclick = () => $('#impf').click();
+      $('#impf').onchange = e => {
+        const f = e.target.files[0]; if (!f) return;
+        if (!/\.docx$/i.test(f.name)) return toast('Нужен файл в формате .docx', true);
+        Object.assign(imp, { file: f, res: null, report: null }); paint();
+      };
+      $('#impc').onchange = e => { imp.clean = e.target.checked; if (imp.res) toast('Нажмите «Анализ», чтобы применить настройку'); };
+
+      $('#impa').onclick = act(async () => {
+        imp.busy = 'analyze'; imp.res = null; imp.report = null; paint();
+        try {
+          const headers = { 'Content-Type': 'application/octet-stream' };
+          if (token) headers.Authorization = 'Bearer ' + token;
+          const r = await fetch('/import/docx/analyze?clean=' + (imp.clean ? 1 : 0), { method: 'POST', headers, body: imp.file });
+          const d = await r.json().catch(() => ({}));
+          if (r.status === 401) { setToken(null); setTimeout(render, 0); }
+          if (!r.ok) throw new Error(d.error || 'Не удалось разобрать файл');
+          d.disciplines.forEach(x => { x.sel = false; });
+          imp.res = d;
+        } finally { imp.busy = ''; paint(); }
+      });
+
+      const res = $('#tab');
+      res.oninput = e => { const i = e.target.dataset.name; if (i !== undefined) imp.res.disciplines[+i].name = e.target.value; };
+      res.onchange = e => { const i = e.target.dataset.sel; if (i !== undefined) { imp.res.disciplines[+i].sel = e.target.checked; impUpdSel(); } };
+      impUpdSel();
+
+      $('#impex').onclick = () => {
+        const a = document.createElement('a');
+        a.href = 'example.docx'; a.download = 'example.docx';
+        document.body.appendChild(a); a.click(); a.remove();
+      };
+
+      const up = $('#impu');
+      if (up) up.onclick = act(async () => {
+        const picked = imp.res.disciplines.filter(d => d.sel && !d.uploaded && d.questions.length);
+        if (!picked.length) return toast('Отметьте хотя бы одну дисциплину', true);
+        if (picked.some(d => !d.name.trim())) return toast('У отмеченной дисциплины пустое название', true);
+        const BATCH = 10;
+        Object.assign(imp, { busy: 'upload', done: 0, total: picked.reduce((a, d) => a + d.questions.length, 0), report: null });
+        paint();
+        const rep = { added: 0, discs: 0, failed: [] };
+        try {
+          for (const d of picked) {
+            const name = d.name.trim();
+            for (let i = 0; i < d.questions.length; i += BATCH) {
+              const chunk = d.questions.slice(i, i + BATCH);
+              const r = await api('POST', '/import/questions', { disciplineName: name, questions: chunk });
+              rep.added += r.added;
+              r.failed.forEach(f => rep.failed.push({ disc: name, n: i + f.index + 1, error: f.error }));
+              imp.done += chunk.length; impPaintProgress();
+            }
+            d.uploaded = true; d.sel = false; rep.discs++;
+          }
+        } catch (e) { rep.fatal = e.message; }
+        imp.busy = ''; imp.report = rep; paint();
+        if (impActive()) toast(rep.fatal ? 'Загрузка прервана: ' + rep.fatal : `Готово: загружено ${nQ(rep.added)}`, !!rep.fatal);
+      });
+    }
+
+    /* ----- результаты ----- */
+    let flt = { name: '', group: '' };
+    async function resultsTab(el) {
+      const p = new URLSearchParams(); if (flt.name) p.set('name', flt.name); if (flt.group) p.set('group', flt.group);
+      const rows = await api('GET', '/attempts?' + p);
+      el.innerHTML = `<section class="panel"><form id="ff" class="grid" style="grid-template-columns:1fr 1fr auto">
+      <label>ФИО (2+ символа)<input name="name" value="${esc(flt.name)}"></label><label>Группа<input name="group" value="${esc(flt.group)}"></label><button>Найти</button></form></section>
+    <section class="panel"><div style="overflow-x:auto"><table class="table"><thead><tr><th>ФИО</th><th>Группа</th><th>Начало</th><th>Баллы</th><th></th></tr></thead><tbody>
+    ${rows.map(r => `<tr><td>${esc(r.name)}</td><td>${esc(r.group)}</td><td>${fmtDate(r.startedAt)}</td>
+      <td>${r.finishedAt ? `${num(r.score)} / ${num(r.maxScore)}` : '<span class="muted">идёт</span>'}</td>
+      <td><button class="ghost" data-open="${r.id}">Ответы</button></td></tr>`).join('') || '<tr><td colspan="5" class="muted">Ничего не найдено</td></tr>'}
+    </tbody></table></div></section><div id="detail"></div>`;
+      $('#ff').onsubmit = e => {
+        e.preventDefault();
+        const name = e.target.name.value.trim();
+        if (name && name.length < 2) return toast('Для поиска по ФИО введите не менее 2 букв', true);
+        flt = { name, group: e.target.group.value.trim() };
+        render();
+      };
+      el.querySelectorAll('[data-open]').forEach(b => b.onclick = act(async () => {
+        const [a, qs] = await Promise.all([api('GET', `/attempts/${b.dataset.open}/answers`), api('GET', '/questions')]);
+        const byId = Object.fromEntries(qs.map(q => [q._id, q]));
+        $('#detail').innerHTML = `<section class="panel"><h2>${esc(a.name)}, ${esc(a.group)}</h2>
+      <p class="muted">Начало: ${fmtDate(a.startedAt)} · Итог: ${a.finishedAt ? `${num(a.score)} из ${num(a.maxScore)}` : 'не завершён'}</p>
+      ${a.questionIds.map(id => {
+          const q = byId[id], has = id in a.answers;
+          return `<div class="ans"><b>${q ? esc(q.text) : 'Вопрос удалён'}</b><br>
+        <span class="muted">Ответ:</span> ${has ? esc(q ? showAnswer(q, a.answers[id]) : JSON.stringify(a.answers[id])) : '<span class="muted">не отвечен</span>'}
+        ${has ? `<br><span class="muted">Баллы:</span> ${num(a.scores[id])}${q ? ` из ${WEIGHT[q.type]}` : ''}` : ''}</div>`;
+        }).join('')}</section>`;
+        $('#detail').scrollIntoView({ behavior: 'smooth' });
+      }));
+    }
+
+    /* ----- аккаунт ----- */
+    async function settingsTab(el) {
+      try { Object.assign(WEIGHT, await api('GET', '/weights')); } catch { }
+      let S = {}; try { S = await api('GET', '/settings'); } catch { }
+      el.innerHTML = `<section class="panel"><h2>Веса типов вопросов</h2>
+      <p class="muted" style="margin-top:0">Максимальный балл за вопрос каждого типа. Изменение действует на сервере для всех пользователей.</p>
+      <form id="wf" class="stack"><div class="grid">${Object.entries(TYPES).map(([k, v]) =>
+        `<label>${v}<input type="number" min="0" step="any" required data-w="${k}" value="${WEIGHT[k]}"></label>`).join('')}</div>
+      <div><button class="primary">Сохранить веса</button></div></form></section>
+          <section class="panel"><h2>Доступ</h2>
+      <label class="sw"><input type="checkbox" id="regOff" ${S.registrationDisabled ? 'checked' : ''}><span>Отключить поле регистрации</span></label>
+      <label class="sw"><input type="checkbox" id="admOn" ${S.isAdmin ? 'checked' : ''}><span>Назначить меня администратором</span></label>
+      <p class="muted">Администратор видит все вкладки, остальные пользователи — только «Результаты».</p></section>
+    <section class="panel"><h2>Сессия</h2><p class="muted">Авторизация действует, пока работает сервер.</p><button id="out">Выйти</button></section>
+    <section class="panel"><h2>Удалить аккаунт</h2><p class="muted">Ваши вопросы останутся в базе. Нужен пароль. Без повторной регистрации с теми же данными доступ к вопросам будет потерян.</p>
+      <form id="df" class="inline"><input name="p" type="password" placeholder="Пароль" required aria-label="Пароль"><button class="danger">Удалить аккаунт</button></form></section>
+    <section class="panel"><h2>Очистить все базы</h2><p class="muted">Удалит дисциплины, темы, вопросы, тесты, пользователей, ответы, сохраненные изменения весов вопросов и результаты. Это необратимо.</p>
+      <button class="danger" id="wipe">Очистить всё</button></section>`;
+      $('#wf').onsubmit = act(async e => {
+        e.preventDefault();
+        const weights = {};
+        e.target.querySelectorAll('[data-w]').forEach(i => weights[i.dataset.w] = Number(i.value));
+        Object.assign(WEIGHT, await api('PUT', '/weights', weights));
+        toast('Веса сохранены');
+      });
+      $('#out').onclick = act(async () => { await api('POST', '/auth/logout'); setToken(null); render(); });
+            $('#regOff').onchange = act(async e => {
+        await api('PUT', '/settings', { registrationDisabled: e.target.checked });
+        toast(e.target.checked ? 'Регистрация отключена' : 'Регистрация включена');
+      });
+      $('#admOn').onchange = act(async e => {
+        await api('PUT', '/settings', { adminMode: e.target.checked });
+        toast(e.target.checked ? 'Вы назначены администратором' : 'Режим администратора выключен');
+        render();   // перерисовать вкладки
+      });
+      $('#df').onsubmit = act(async e => {
+        e.preventDefault();
+        if (!confirm('Удалить аккаунт?')) return;
+        await api('DELETE', `/users/${sessionStorage.getItem('uid')}`, { password: e.target.p.value });
+        setToken(null); toast('Аккаунт удалён'); render();
+      });
+      $('#wipe').onclick = act(async () => {
+        if (!confirm('Стереть ВСЕ данные? Отменить нельзя.')) return;
+        await api('DELETE', '/db'); setToken(null); sessionStorage.clear(); toast('Базы очищены'); render();
+      });
+    }
+
+    (async () => {
+      try {
+        const d = await api('GET', '/ip-port');
+        if (d && d.ip && d.port) serverAddr = `${d.ip}:${d.port}`;
+        if (d && typeof d.local === 'boolean') isLocal = d.local;
+      } catch { }
+      try { Object.assign(WEIGHT, await api('GET', '/weights')); } catch { }
+      if (!isLocal) {
+        const tb = document.querySelector('[data-mode="teacher"]');
+        if (tb) tb.hidden = true;   // прячем вкладку «Преподаватель» на удалённых клиентах
+      }
+      render();
+    })();
+  </script>
+</body>
+
+</html>

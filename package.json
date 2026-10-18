@@ -1,0 +1,47 @@
+{
+  "name": "testsIIT",
+  "version": "0.5.0",
+  "description": "Приложение тестов в локальной сети",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "postinstall": "electron-builder install-app-deps",
+    "dist": "electron-builder --win",
+    "start-dev": "node server.js"
+  },
+  "build": {
+    "appId": "local.tests.app",
+    "productName": "Тесты",
+    "files": [
+      "**/*",
+      "!media/**",
+      "!*.sqlite*",
+      "!dist/**"
+    ],
+    "win": {
+      "target": [
+        "nsis",
+        "portable"
+      ]
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true
+    }
+  },
+  "dependencies": {
+    "@seald-io/nedb": "^4.0.4",
+    "az": "^0.2.3",
+    "better-sqlite3": "^13.0.3",
+    "express": "^4.19.2",
+    "internal-ip": "^9.0.0",
+    "jszip": "^3.10.2",
+    "natural": "^8.0.1",
+    "xml-js": "^1.6.11"
+  },
+  "devDependencies": {
+    "@electron/rebuild": "^4.2.1",
+    "electron": "^44.8.0",
+    "electron-builder": "^26.15.3"
+  }
+}
